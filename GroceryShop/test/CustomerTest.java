@@ -2,37 +2,35 @@ package GroceryShop.test;
 
 import GroceryShop.dao.CustomerDAOimpl;
 import GroceryShop.dao.ProductDAOimpl;
+import GroceryShop.dao.SerializationDeserialization;
 import GroceryShop.dao.Validator;
 import GroceryShop.pojo.Customer;
 import GroceryShop.pojo.Item;
 import GroceryShop.pojo.Shopitems;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 public class CustomerTest
 {
     public static void main(String[] args) {
         Scanner sc=new Scanner(System.in);
+        Item s=null;
+        Shopitems p = null;
         Customer c = null;
-        CustomerDAOimpl cimpl=new CustomerDAOimpl();
+        ArrayList<Item> items;
+        ArrayList<Shopitems> product;
         ArrayList<Customer> clist = null;
-        int option,id;
-        String Username,name,Email,password,username1,password1;
+        CustomerDAOimpl cimpl=new CustomerDAOimpl();
+        ProductDAOimpl pimpl=new ProductDAOimpl();
+        int option,id,qty;
+        String Username,name,Email,password,pname;
+        double price,price1,totalPrice,overAllPrice=0.0;
         long Contact;
         char choice;
         boolean flag,exit=false;
         Validator v=new Validator();
-        //--------------------------------------------------------------------------------
-        Item s=null;
-        ArrayList<Item> items = null;
-        //---------------------------------------------------------------------------------
-        Shopitems p = null;
-        ProductDAOimpl pimpl=new ProductDAOimpl();
-        ArrayList<Shopitems> product;
-        int qty;
-        double price,price1,totalPrice,overAllPrice=0.0;
-        String pname;
+        SerializationDeserialization sd=new SerializationDeserialization();
 
-        //---------------------------------------------------------------------------------
         System.out.println("Welcome to our Grocery Shop");
         do{
             System.out.println("please enter the option given below");
@@ -40,9 +38,8 @@ public class CustomerTest
             option=sc.nextInt();
             sc.nextLine();
             switch (option) {
-                    case 1: {
-                        while(true)
-                        {
+                case 1: {
+                    do {
                         System.out.println("1.Add product to list\n" +
                                 "2.Update list\n" +
                                 "3.Delete product from list\n" +
@@ -71,6 +68,8 @@ public class CustomerTest
                                     choice = sc.next().charAt(0);
                                     sc.nextLine();
                                 } while (choice == 'y' || choice == 'Y');
+                                product = pimpl.showAllProduct();
+                                sd.serialization(product);
                                 break;
                             }
                             case 2: {
@@ -81,11 +80,7 @@ public class CustomerTest
                                     System.out.println("No such product available");
                                 } else {
                                     product = pimpl.showAllProduct();
-                                    Shopitems.displayFormat();
-                                    for (Shopitems p1 : product) {
-                                        p1.display();
-                                        System.out.format("-----------------------------------------------------------------------------------------------------------------------------------\n");
-                                    }
+                                    sd.deserialization(product);
                                     System.out.println("\nDo you really what to update Your List?" +
                                             "Enter y or n");
                                     choice = sc.next().charAt(0);
@@ -113,11 +108,7 @@ public class CustomerTest
                             }
                             case 3: {
                                 product = pimpl.showAllProduct();
-                                Shopitems.displayFormat();
-                                for (Shopitems p1 : product) {
-                                    p1.display();
-                                    System.out.format("-----------------------------------------------------------------------------------------------------------------------------------\n");
-                                }
+                                sd.deserialization(product);
                                 System.out.println("plz enter product id to delete");
                                 id = sc.nextInt();
                                 sc.nextLine();
@@ -131,23 +122,16 @@ public class CustomerTest
                             }
                             case 4: {
                                 product = pimpl.showAllProduct();
-                                Shopitems.displayFormat();
-                                for (Shopitems p1 : product) {
-                                    p1.display();
-                                    System.out.format("-----------------------------------------------------------------------------------------------------------------------------------\n");
-                                }
-
+                                sd.deserialization(product);
                                 break;
                             }
                             case 5: {
                                 System.exit(0);
                             }
-
-
                         }
-                    }
-
-                    }
+                    }while(exit=false);
+                    break;
+                }
                 case 2: {
                     do {
                         System.out.println("1. Customer Registration\n" +
@@ -180,9 +164,9 @@ public class CustomerTest
                             }
                             case 2: {
                                 try {
-                                    username1 = v.validateUserName();
-                                    password1 = v.validatePassWord();
-                                    if ((c.getUsername().equals(username1)) && (c.getPassword().equals(password1))) {
+                                    Username = v.validateUserName();
+                                    password = v.validatePassWord();
+                                    if ((c.getUsername().equals(Username)) && (c.getPassword().equals(password))) {
                                         System.out.println("User Successfully Logged-in");
                                         do {
                                             System.out.println("1.Show list of product\n" +
@@ -195,13 +179,8 @@ public class CustomerTest
                                             sc.nextLine();
                                             switch (o) {
                                                 case 1: {
-                                                    product = pimpl.showAllProduct();
-                                                    Shopitems.displayFormat();
-                                                    for (Shopitems p1 : product) {
-                                                        p1.display();
-                                                        System.out.format("-----------------------------------------------------------------------------------------------------------------------------------\n");
-                                                    }
-
+                                                    product=pimpl.showAllProduct();
+                                                    sd.deserialization(product);
                                                     break;
                                                 }
                                                 case 2: {
@@ -228,7 +207,7 @@ public class CustomerTest
 
                                                 }
                                                 case 3: {
-                                                    items = pimpl.showAllItem();
+                                                    items=pimpl.showAllItem();
                                                     Item.display1();
                                                     for (Item p1 : items) {
                                                         p1.display();
@@ -263,14 +242,12 @@ public class CustomerTest
                                 }
                                 break;
                             }
-
-
                             case 3: {
                                 System.out.println("Enter Username to update your profile");
                                 Username = sc.nextLine();
                                 c = cimpl.ShoebyUsername(Username);
                                 if (c == null) {
-                                    System.out.println("no such book avaliable");
+                                    System.out.println("no such User avaliable");
                                 } else {
                                     Customer.displayFormat();
                                     for (Customer c1 : clist) {
@@ -351,7 +328,5 @@ public class CustomerTest
                 }
             }
         }while(exit==false);
-
     }
-
 }

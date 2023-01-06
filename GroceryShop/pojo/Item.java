@@ -1,6 +1,8 @@
 package GroceryShop.pojo;
 
-public class Item
+import java.io.Serializable;
+
+public class Item implements Serializable
 {
     int id,qty;
     String name;
